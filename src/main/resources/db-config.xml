@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+ http://www.springframework.org/schema/beans/spring-beans.xsd
+ http://www.springframework.org/schema/tx
+ http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+          destroy-method="close">
+
+        <property name="driverClass">
+            <value>${jdbc.driver.className}</value>
+        </property>
+        <property name="jdbcUrl">
+            <value>${jdbc.url}</value>
+        </property>
+        <property name="user">
+            <value>${jdbc.username}</value>
+        </property>
+        <property name="password">
+            <value>${jdbc.password}</value>
+        </property>
+        <property name="acquireIncrement" value="${c3p0.acquire_increment}" />
+        <property name="minPoolSize" value="${c3p0.min_size}" />
+        <property name="maxPoolSize" value="${c3p0.max_size}" />
+        <property name="maxIdleTime" value="${c3p0.idle_test_period}" />
+        <property name="initialPoolSize" value="${c3p0.initial_pool_size}" />
+        <property name="maxIdleTimeExcessConnections" value="${c3p0.maxIdleTimeExcessConnections}" />
+        <property name="idleConnectionTestPeriod" value="${c3p0.idle_test_period}" />
+        <property name="maxStatements" value="${c3p0.max_statements}" />
+        <property name="numHelperThreads" value="${c3p0.num_helper_threads}" />
+        <property name="statementCacheNumDeferredCloseThreads" value="${c3p0.num_helper_threads}" />
+    </bean>
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource">
+            <ref bean="dataSource" />
+        </property>
+        <property name="packagesToScan" value="com.irufus.tradingalertbot" />
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">${jdbc.hibernate.dialect}</prop>
+                <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">false</prop>
+                <prop key="hibernate.use_sql_comments">false</prop>
+                <prop key="hibernate.auto_close_session">true</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory" />
+        </property>
+    </bean>
+    <tx:annotation-driven />
+</beans>

@@ -1,0 +1,39 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>configuration.properties</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="offloadTaskhandler" class="java.util.concurrent.ThreadPoolExecutor">
+        <constructor-arg index="0" type="int" value="8"/><!-- Minimum Threads-->
+        <constructor-arg index="1" type="int" value="256"/><!-- Max threads-->
+        <constructor-arg index="2" type="long" value="25"/><!-- lifepsan-->
+        <constructor-arg index="3" type="java.util.concurrent.TimeUnit"><!-- Time Unit-->
+            <bean class="java.util.concurrent.TimeUnit" factory-method="valueOf">
+                <constructor-arg>
+                    <value>SECONDS</value>
+                </constructor-arg>
+            </bean>
+        </constructor-arg>
+        <constructor-arg index="4" type="java.util.concurrent.BlockingQueue"><!-- workQueue type-->
+            <bean class="java.util.concurrent.SynchronousQueue"/>
+        </constructor-arg>
+    </bean>
+    <import resource="db-config.xml" />
+    <tx:annotation-driven />
+    <context:component-scan base-package="com.irufus.tradingalertbot.core.bo" />
+    <context:component-scan base-package="com.irufus.tradingalertbot.core.dao"/>
+    <context:component-scan base-package="com.irufus.tradingalertbot.core.services" />
+ </beans>
