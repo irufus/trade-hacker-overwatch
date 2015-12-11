@@ -132,14 +132,14 @@ public class MessageListener implements UserStreamListener {
                                 String replyMessage = "Got it: " + watch.getSymbol() + " @ ";
                                 replyMessage += (watch.getAlertHI() != null)? watch.getAlertHI() + " HI " : "";
                                 replyMessage += (watch.getAlertLOW() != null) ? watch.getAlertLOW() + " LOW " : "";
-                                updateStatus(replyMessage, replyTo);
+                                MessageHandler.updateStatusWithReply(twitter, replyMessage, replyTo);
                             } catch (IndexOutOfBoundsException iex) {
                                 log.error("Improrper request", iex);
-                                updateStatus("Couldn't understand you fam", replyTo);
+                                MessageHandler.updateStatusWithReply(twitter, "Couldn't understand you fam", replyTo);
                             }
 
                         } else {
-                            updateStatus("Couldn't quite understand you fam", replyTo);
+                            MessageHandler.updateStatusWithReply(twitter, "Couldn't quite understand you fam", replyTo);
                         }
                     }
                 }
@@ -150,16 +150,6 @@ public class MessageListener implements UserStreamListener {
         }
     }
 
-    private boolean updateStatus(String msg, String replyTo){
-        try {
-            twitter.updateStatus(replyTo + " " + msg);
-            log.info("--> " + msg);
-        } catch (TwitterException e) {
-            log.error("Unable to send message", e);
-            return false;
-        }
-        return true;
-    }
 
     public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
 

@@ -3,6 +3,8 @@ package com.irufus.tradingalertbot.core.dao.implementations;
 import com.irufus.tradingalertbot.core.bo.Watch;
 import com.irufus.tradingalertbot.core.dao.interfaces.IWatchDAO;
 import org.hibernate.SessionFactory;
+import org.hibernate.StatelessSession;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -29,6 +31,16 @@ public class WatchDAO implements IWatchDAO {
             log.error("Unable to save watch", dae);
         }
 
+    }
+    public void saveWatches(List<Watch> watches){
+        StatelessSession sSession = hibernateTemplate.getSessionFactory().openStatelessSession();
+        Transaction transaction = sSession.beginTransaction();
+        for(Watch watch : watches){
+            sSession.update(watch);
+        }
+        transaction.commit();
+        sSession.close();
+        log.debug("Saved " + watches.size() + " watches");
     }
 
     public void deleteWatch(Watch watch) {

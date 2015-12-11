@@ -2,6 +2,7 @@ package com.irufus.tradingalertbot.control;
 
 
 import com.irufus.tradingalertbot.communications.MessageListener;
+import com.irufus.tradingalertbot.monitoring.AlertsWatcher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import twitter4j.*;
@@ -18,10 +19,13 @@ public class WatchBotServer {
         Twitter twitter = new TwitterFactory().getInstance();
         TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
         MessageListener messageListener = null;
+        Thread alertsWatcher = null;
         try {
             messageListener = new MessageListener(twitter, context);
             twitterStream.addListener(messageListener);
             twitterStream.user();
+            alertsWatcher = new Thread(new AlertsWatcher(twitter, 15000));
+            alertsWatcher.start();
         } catch (TwitterException e) {
             e.printStackTrace();
         }
